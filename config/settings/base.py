@@ -4,6 +4,7 @@ from pathlib import Path
 
 from decouple import config
 
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = config('SECRET_KEY')
@@ -11,6 +12,12 @@ SECRET_KEY = config('SECRET_KEY')
 DEBUG = config('DEBUG', default=False, cast=bool)
 
 ALLOWED_HOSTS = ['*']
+
+from decouple import config
+
+REDIS_HOST = config("REDIS_HOST", default="127.0.0.1")
+REDIS_PORT = config("REDIS_PORT", cast=int, default=6379)
+REDIS_DB = config("REDIS_DB", cast=int, default=0)
 
 DJANGO_APPS = [
     'django.contrib.admin',
@@ -21,7 +28,8 @@ DJANGO_APPS = [
     'django.contrib.staticfiles',
 ]
 CUSTOM_APPS = [
-    'apps.users'
+    'apps.users',
+    'apps.click',
 ]
 
 THIRD_PARTY_APPS = [
@@ -31,6 +39,21 @@ THIRD_PARTY_APPS = [
     "rest_framework_simplejwt",
     "django_filters",
 ]
+
+CLICK_SETTINGS = {
+    'MERCHANT_ID': '104266',
+    'SERVICE_ID': '41392',
+    'SECRET_KEY': 'sENztm3P2QyIbVo',
+    'RETURN_URL': 'https://...../payment-success/',
+}
+
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'Test Project API',
+    'DESCRIPTION': 'Click to\'lov tizimi integratsiyasi',
+    'VERSION': '1.0.0',
+    'SERVE_INCLUDE_SCHEMA': False,
+    'SCHEMA_PATH_PREFIX': r'/api/v1/',
+}
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + CUSTOM_APPS
 
