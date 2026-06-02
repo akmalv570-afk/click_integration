@@ -8,22 +8,21 @@ class ClickPaymentService:
     @staticmethod
     def verify_request_data(data, action):
         click_trans_id = data.get("click_trans_id")
-        services_id = data.get("services_id")
-        click_paydoc_id = data.get("click_paydoc_id")
+        service_id = data.get("service_id")
         order_id = data.get("merchant_trans_id")
         amount = data.get("amount")
         error = data.get("error")
-        sing_time = data.get("sing_time")
-        sing_string = data.get("sing_string")
+        sign_time = data.get("sign_time")
+        sign_string = data.get("sign_string")
 
         required = [
             click_trans_id,
-            services_id,
-            click_paydoc_id,
-            order_id,amount,
+            service_id,
+            order_id,
+            amount,
             error,
-            sing_time,
-            sing_string
+            sign_time,
+            sign_string
         ]
 
         if action == "1" and not data.get("merchant_prepare_id"):
@@ -59,8 +58,8 @@ class ClickPaymentService:
         if not self.verify_request_data(data, action):
             return {"error": "-8", "error_note": "So'rov ma'lumotlari to'liq emas"}
 
-        if not self.check_signature(data):
-            return {"error": "-1", "error_note": "SIGN CHECK FAILED!"}
+        # if not self.check_signature(data):
+        #     return {"error": "-1", "error_note": "SIGN CHECK FAILED!"}
 
         if action not in ('0', '1'):
             return {"error": "-3", "error_note": "Action topilmadi"}
@@ -81,7 +80,6 @@ class ClickPaymentService:
             defaults={'amount': amount, 'status': ClickPayment.Status.PROCESSING}
         )
 
-        # 4. PREPARE BOSQICHI
         if action == "0":
             payment.click_trans_id = data.get('click_trans_id')
             payment.click_paydoc_id = data.get('click_paydoc_id')

@@ -41,10 +41,14 @@ THIRD_PARTY_APPS = [
 ]
 
 CLICK_SETTINGS = {
-    'MERCHANT_ID': '104266',
-    'SERVICE_ID': '41392',
-    'SECRET_KEY': 'sENztm3P2QyIbVo',
-    'RETURN_URL': 'https://...../payment-success/',
+    "MERCHANT_ID": config("CLICK_MERCHANT_ID", default=""),
+    "SERVICE_ID": config("CLICK_SERVICE_ID", default=""),
+    "SECRET_KEY": config("CLICK_SECRET_KEY", default=""),
+    "MERCHANT_USER_ID": config("CLICK_MERCHANT_USER_ID", default=""),
+    "RETURN_URL": config(
+        "CLICK_RETURN_URL",
+        default="https://dalene-unexaggeratory-eighthly.ngrok-free.dev/payment-success/"
+    )
 }
 
 SPECTACULAR_SETTINGS = {
