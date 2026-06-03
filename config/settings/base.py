@@ -26,6 +26,7 @@ DJANGO_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'paytechuz.integrations.django',
 ]
 CUSTOM_APPS = [
     'apps.users',
@@ -40,15 +41,19 @@ THIRD_PARTY_APPS = [
     "django_filters",
 ]
 
-CLICK_SETTINGS = {
-    "MERCHANT_ID": config("CLICK_MERCHANT_ID", default=""),
-    "SERVICE_ID": config("CLICK_SERVICE_ID", default=""),
-    "SECRET_KEY": config("CLICK_SECRET_KEY", default=""),
-    "MERCHANT_USER_ID": config("CLICK_MERCHANT_USER_ID", default=""),
-    "RETURN_URL": config(
-        "CLICK_RETURN_URL",
-        default="https://dalene-unexaggeratory-eighthly.ngrok-free.dev/payment-success/"
-    )
+PAYTECHUZ = {
+    'CLICK': {
+            'SERVICE_ID': config("CLICK_SERVICE_ID", default=""),
+            'MERCHANT_ID': config("CLICK_MERCHANT_ID", default=""),
+            'MERCHANT_USER_ID': config("CLICK_MERCHANT_USER_ID", default=""),
+            'SECRET_KEY': config("CLICK_SECRET_KEY", default=""),
+            'PAYTECH_LICENSE_API_KEY': config("PAYTECH_LICENSE_API_KEY"),
+            'ACCOUNT_MODEL': 'apps.click.models.Invoice',
+            'ACCOUNT_FIELD': 'id',
+            'COMMISSION_PERCENT': 0.0,
+            'ONE_TIME_PAYMENT': True,
+            'IS_TEST_MODE': True,
+        },
 }
 
 SPECTACULAR_SETTINGS = {

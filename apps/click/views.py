@@ -1,14 +1,14 @@
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from .services import ClickPaymentService
+from paytechuz.integrations.django.views import BaseClickWebhookView
+from .models import Invoice
 
 
-class ClickWebhookAPIView(APIView):
-    authentication_classes = []
-    permission_classes = []
+class ClickWebhookView(BaseClickWebhookView):
+    def successfully_payment(self, params, transaction):
+        invoice = Invoice.objects.get(id=transaction.account_id)
+        invoice.status = 'paid'
+        invoice.save()
 
-    def post(self, request, *args, **kwargs):
-        service = ClickPaymentService()
-        result = service.process_webhook(request.data)
-
-        return Response(result)
+    def cancelled_payment(self, params, transaction):
+        invoice = Invoice.objects.get(id=transaction.account_id)
+        invoice.status = 'cancelled'
+        invoice.save()

@@ -1,13 +1,10 @@
 from django.contrib import admin
-from .models import ClickPayment, Order
+from .models import Invoice
 
 
 
-@admin.register(Order)
-class OrderAdmin(admin.ModelAdmin):
+@admin.register(Invoice)
+class InvoiceAdmin(admin.ModelAdmin):
     list_display = ('id',)
 
     search_fields = ('id',)
-
-
-admin.site.register(ClickPayment)
