@@ -4,6 +4,7 @@ from rest_framework.response import Response
 from paytechuz.gateways.click import ClickGateway
 from paytechuz.integrations.django.views import BaseClickWebhookView
 from .models import Invoice
+from drf_spectacular.utils import extend_schema
 
 
 class ClickWebhookView(BaseClickWebhookView):
@@ -19,6 +20,7 @@ class ClickWebhookView(BaseClickWebhookView):
 
 
 class InvoiceCreateView(APIView):
+    @extend_schema(request=None, responses=None)
     def post(self, request):
         amount = request.data.get('amount')
 
