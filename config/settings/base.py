@@ -52,7 +52,7 @@ PAYTECHUZ = {
             'ACCOUNT_FIELD': 'id',
             'COMMISSION_PERCENT': 0.0,
             'ONE_TIME_PAYMENT': True,
-            'IS_TEST_MODE': True,
+            'IS_TEST_MODE': False,
         },
 }
 
