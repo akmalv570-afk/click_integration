@@ -4,7 +4,6 @@ from pathlib import Path
 
 from decouple import config
 
-
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = config('SECRET_KEY')
@@ -16,10 +15,14 @@ ALLOWED_HOSTS = ['*']
 from decouple import config
 
 REDIS_HOST = config("REDIS_HOST", default="127.0.0.1")
+REDIS_HOST = config("REDIS_HOST", default="127.0.0.1")
 REDIS_PORT = config("REDIS_PORT", cast=int, default=6379)
 REDIS_DB = config("REDIS_DB", cast=int, default=0)
 
-DJANGO_APPS = [
+SHARED_APPS = [
+    'django_tenants',
+    'apps.customers',
+
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -27,11 +30,26 @@ DJANGO_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'paytechuz.integrations.django',
+
+    "rest_framework",
+    "corsheaders",
+    "drf_spectacular",
+    "rest_framework_simplejwt",
+    "django_filters",
 ]
-CUSTOM_APPS = [
+
+TENANT_APPS = [
     'apps.users',
     'apps.click',
 ]
+
+INSTALLED_APPS = list(SHARED_APPS) + [
+    app for app in TENANT_APPS if app not in SHARED_APPS
+]
+
+TENANT_MODEL = "customers.Client"
+TENANT_DOMAIN_MODEL = "customers.Domain"
+
 
 THIRD_PARTY_APPS = [
     "rest_framework",
@@ -41,19 +59,20 @@ THIRD_PARTY_APPS = [
     "django_filters",
 ]
 
+PAYTECH_LICENSE_API_KEY = config("PAYTECH_LICENSE_API_KEY", default="808e6b0d-6099-4045-a289-90999b7533a8")
+
 PAYTECHUZ = {
     'CLICK': {
-            'SERVICE_ID': config("CLICK_SERVICE_ID", default=""),
-            'MERCHANT_ID': config("CLICK_MERCHANT_ID", default=""),
-            'MERCHANT_USER_ID': config("CLICK_MERCHANT_USER_ID", default=""),
-            'SECRET_KEY': config("CLICK_SECRET_KEY", default=""),
-            'PAYTECH_LICENSE_API_KEY': config("PAYTECH_LICENSE_API_KEY"),
-            'ACCOUNT_MODEL': 'apps.click.models.Invoice',
-            'ACCOUNT_FIELD': 'id',
-            'COMMISSION_PERCENT': 0.0,
-            'ONE_TIME_PAYMENT': True,
-            'IS_TEST_MODE': False,
-        },
+        'SERVICE_ID': config("CLICK_SERVICE_ID", default=""),
+        'MERCHANT_ID': config("CLICK_MERCHANT_ID", default=""),
+        'MERCHANT_USER_ID': config("CLICK_MERCHANT_USER_ID", default=""),
+        'SECRET_KEY': config("CLICK_SECRET_KEY", default=""),
+        'ACCOUNT_MODEL': 'apps.click.models.Invoice',
+        'ACCOUNT_FIELD': 'id',
+        'COMMISSION_PERCENT': 0.0,
+        'ONE_TIME_PAYMENT': True,
+        'IS_TEST_MODE': False,
+    },
 }
 
 SPECTACULAR_SETTINGS = {
@@ -64,9 +83,9 @@ SPECTACULAR_SETTINGS = {
     'SCHEMA_PATH_PREFIX': r'/api/v1/',
 }
 
-INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + CUSTOM_APPS
 
 MIDDLEWARE = [
+    'django_tenants.middleware.main.TenantMainMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -78,6 +97,7 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'config.urls.base'
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 # AUTH_USER_MODEL = "users.User"
 
 TEMPLATES = [
@@ -99,7 +119,7 @@ WSGI_APPLICATION = 'config.wsgi.application'
 
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.postgresql",
+        "ENGINE": "django_tenants.postgresql_backend",
         "NAME": config('POSTGRES_DB'),
         "USER": config('POSTGRES_USER'),
         "PASSWORD": config('POSTGRES_PASSWORD'),
@@ -107,6 +127,11 @@ DATABASES = {
         "PORT": config('DB_PORT'),
     }
 }
+
+DATABASE_ROUTERS = (
+    'django_tenants.routers.TenantSyncRouter',
+)
+
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -153,8 +178,7 @@ USE_I18N = True
 USE_TZ = True
 
 STATIC_URL = 'static/'
-APPEND_SLASH = False
-
+APPEND_SLASH = True
 
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=5),
