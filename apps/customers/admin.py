@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django_tenants.admin import TenantAdminMixin
-from apps.customers.models import Client
+from apps.customers.models import Client, Domain
 
 from django_tenants.utils import get_public_schema_name
 from django.db import connection
@@ -15,3 +15,8 @@ class ClientAdmin(TenantAdminMixin, admin.ModelAdmin):
         if connection.schema_name != get_public_schema_name():
             return qs.none()
         return qs
+
+
+@admin.register(Domain)
+class DomainAdmin(admin.ModelAdmin):
+    list_display = ['domain', 'tenant', 'is_primary']
